@@ -1,0 +1,137 @@
+﻿@using Umbraco.Cms.Core.Models.Blocks
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+
+@{
+    Layout = null;
+
+    var heroImage = Model.Value<Umbraco.Cms.Core.Models.MediaWithCrops>("heroImage");
+    var components = Model.Value<BlockListModel>("pageComponents");
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@Model.Name</title>
+
+    <style>
+        body{
+            margin:0;
+            font-family:Arial;
+            background:#111;
+            color:white;
+        }
+
+        .hero{
+            padding:80px 20px;
+            text-align:center;
+        }
+
+        .hero img{
+            width:300px;
+            border-radius:20px;
+        }
+
+        .component{
+            margin:20px;
+            padding:30px;
+            border-radius:20px;
+        }
+
+        .components-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));
+            gap:20px;
+            padding:10px 20px 30px 20px;
+            margin-top:0;
+        }
+
+        .component{
+            padding:30px;
+            border-radius:20px;
+            box-shadow:0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .component img{
+            width:100%;
+            max-width:250px;
+            border-radius:15px;
+            margin-top:15px;
+            margin:0;
+        }
+        
+        ul{
+            padding-left:20px;
+        }
+    </style>
+</head>
+<body>
+
+<section class="hero" style="background:@Model.Value("backgroundColor");">
+    <h1>@Model.Value("heroTitle")</h1>
+
+    <p>@Model.Value("heroSubtitle")</p>
+
+    @if(heroImage != null)
+    {
+        <img src="@heroImage.MediaUrl()" />
+    }
+</section>
+
+<section id="three-scene" style="height:220px; margin-bottom:-30px;"></section>
+
+@if(components != null)
+{
+    <div class="components-grid">
+
+    @foreach(var block in components)
+    {
+        var content = block.Content;
+
+        if(content.ContentType.Alias == "mealCard")
+        {
+            var image = content.Value<Umbraco.Cms.Core.Models.MediaWithCrops>("image");
+
+            <div class="component" style="background:@content.Value("cardColor");">
+                <h2>@content.Value("title")</h2>
+
+                <p>@content.Value("description")</p>
+
+                @if(image != null)
+                {
+                    <img src="@image.MediaUrl()" width="250" />
+                }
+            </div>
+        }
+
+        if(content.ContentType.Alias == "benefitsList")
+        {
+            var image = content.Value<Umbraco.Cms.Core.Models.MediaWithCrops>("image");
+            var benefits = content.Value<IEnumerable<string>>("benefits");
+
+            <div class="component" style="background:@content.Value("backgroundColor");">
+
+                <h2>@content.Value("title")</h2>
+
+                @if(image != null)
+                {
+                    <img src="@image.MediaUrl()" width="150" />
+                }
+
+                @if(benefits != null)
+                {
+                    <ul>
+                        @foreach(var benefit in benefits)
+                        {
+                            <li>@benefit</li>
+                        }
+                    </ul>
+                }
+            </div>
+        }
+    }
+</div>}
+
+<script type="module" src="/scripts/fitness3d.js"></script>
+
+</body>
+</html>
